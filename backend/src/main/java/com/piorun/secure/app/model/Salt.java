@@ -9,8 +9,7 @@ public class Salt {
     private String value;
 
 
-    public Salt(String id, String value) {
-        this.id = id;
+    public Salt(String value) {
         this.value = value;
     }
 

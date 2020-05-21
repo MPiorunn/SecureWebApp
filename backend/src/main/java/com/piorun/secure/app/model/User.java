@@ -1,14 +1,22 @@
 package com.piorun.secure.app.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 
 public class User {
 
     @Id
+    @JsonIgnore
     private String id;
+
     private String username;
+
+    @JsonIgnore
     private String hash;
+
     private String email;
+
+    @JsonIgnore
     private String saltId;
 
     public User(String username, String hash, String email, String saltId) {

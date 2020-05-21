@@ -17,10 +17,10 @@ public class PasswordUtils {
     }
 
     public static String hashPassword(String password, String salt) {
-        return BCrypt.hashpw(password, PEPPER + salt);
+        return BCrypt.hashpw(PEPPER + password, salt);
     }
 
     public static boolean checkPassword(String hash, String password, String salt) {
-        return hash.equals(hashPassword(password, salt));
+        return hash.equals(hashPassword(PEPPER + password, salt));
     }
 }
