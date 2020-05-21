@@ -15,5 +15,9 @@ public class EmailVerifier implements Verifier {
         } catch (AddressException e) {
             throw new SignInException("Wrong email format");
         }
+
+        if (!email.contains(".") || !email.contains("@")) {
+            throw new SignInException("Wrong email format");
+        }
     }
 }

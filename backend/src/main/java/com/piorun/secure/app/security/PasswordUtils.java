@@ -5,7 +5,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 
 public class PasswordUtils {
 
-    private static String PEPPER;
+    private static String PEPPER = "someDefaultValue";
 
     @Value("${spring.security.pepper}")
     public void setDatabase(String pepper) {
@@ -17,10 +17,10 @@ public class PasswordUtils {
     }
 
     public static String hashPassword(String password, String salt) {
-        return BCrypt.hashpw(PEPPER + password, salt);
+        return BCrypt.hashpw(PEPPER + password, salt).substring(salt.length());
     }
 
-    public static boolean checkPassword(String hash, String password, String salt) {
-        return hash.equals(hashPassword(PEPPER + password, salt));
+    public static boolean chechHash(String hash, String password, String salt) {
+        return hash.equals(hashPassword(password, salt));
     }
 }

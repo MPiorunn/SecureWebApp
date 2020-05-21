@@ -10,8 +10,6 @@ public class PasswordVerifier implements Verifier {
 
     public static final int MIN_LENGTH = 10;
 
-
-
     @Override
     public void verify(String password) throws SignInException {
 
