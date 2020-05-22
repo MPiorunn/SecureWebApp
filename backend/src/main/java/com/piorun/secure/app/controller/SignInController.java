@@ -27,7 +27,6 @@ public class SignInController {
     private final UserRepository userRepository;
 
 
-    @Autowired
     public SignInController(ParamsVerifier verifier, UserVerifier userVerifier, SaltRepository saltRepository, UserRepository userRepository) {
         this.verifier = verifier;
         this.userVerifier = userVerifier;
