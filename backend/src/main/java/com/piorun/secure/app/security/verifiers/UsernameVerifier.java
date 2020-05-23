@@ -16,6 +16,9 @@ public class UsernameVerifier implements Verifier {
             logger.info("Username " + username + " must be at least " + MIN_LENGTH + " characters long");
             throw new SignInException("Username must be at least " + MIN_LENGTH + " characters long");
         }
+
+        logger.info("Username " + username + " successfully verified");
+
     }
 
 }

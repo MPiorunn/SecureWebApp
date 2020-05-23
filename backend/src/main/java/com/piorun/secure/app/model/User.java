@@ -19,6 +19,10 @@ public class User {
     @JsonIgnore
     private String saltId;
 
+
+    public User() {
+    }
+
     public User(String username, String hash, String email, String saltId) {
         this.username = username;
         this.hash = hash;

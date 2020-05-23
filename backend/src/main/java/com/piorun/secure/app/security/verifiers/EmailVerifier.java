@@ -26,5 +26,7 @@ public class EmailVerifier implements Verifier {
             logger.info("Wrong email format for email : " + email);
             throw new SignInException("Wrong email format");
         }
+
+        logger.info("Email " + email + " successfully verified");
     }
 }

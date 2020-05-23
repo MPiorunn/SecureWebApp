@@ -1,6 +1,7 @@
 package com.piorun.secure.app.security.verifiers;
 
 import com.piorun.secure.app.exception.SignInException;
+import com.piorun.secure.app.model.User;
 import com.piorun.secure.app.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +22,16 @@ public class UserVerifier implements Verifier {
     public void verify(String username) throws SignInException {
 
         try {
-            userRepository.findByUsername(username);
+            User user = userRepository.findByUsername(username);
+            if (user == null) {
+                logger.info("User with " + username + " already exists in database");
+                throw new SignInException("Username already taken");
+            }
         } catch (IncorrectResultSizeDataAccessException e) {
             logger.info("User with " + username + " already exists in database");
             throw new SignInException("Username already taken");
         }
+
+        logger.info("User " + username + " not found in the database. Verification successful");
     }
 }

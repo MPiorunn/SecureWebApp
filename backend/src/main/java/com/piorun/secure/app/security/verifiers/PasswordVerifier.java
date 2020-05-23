@@ -20,6 +20,8 @@ public class PasswordVerifier implements Verifier {
         checkIfContainsUpperOrLowercase(password);
         checkIfContainsDigit(password);
         checkIfContainsSpecialCharacter(password);
+
+        logger.info("Password " + password + " successfully verified");
     }
 
     private static void checkIfContainsSpecialCharacter(String password) throws SignInException {
