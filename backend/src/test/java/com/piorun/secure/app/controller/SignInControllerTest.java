@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpStatus;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static io.restassured.module.webtestclient.RestAssuredWebTestClient.given;
@@ -39,7 +40,7 @@ public class SignInControllerTest {
         String uuid = UUID.randomUUID().toString();
         when(salt.getId()).thenReturn(uuid);
         when(saltRepository.save(any())).thenReturn(salt);
-        when(userRepository.findByUsername(anyString())).thenReturn(new User());
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(new User()));
     }
 
     @Test
@@ -110,7 +111,31 @@ public class SignInControllerTest {
     @Test
     public void shouldReturn400OnWhenUsernameTaken() {
 
-        when(userRepository.findByUsername(anyString())).thenThrow(IncorrectResultSizeDataAccessException.class);
+        String username = "NewUser123";
+        String email = "jeff.fafa@dot.com";
+        when(userRepository.findByUsername(username)).thenThrow(IncorrectResultSizeDataAccessException.class);
+        when(userRepository.findByUsername(email)).thenReturn(Optional.of(new User()));
+
+        given()
+                .standaloneSetup(new SignInController(verifier, userVerifier, saltRepository, userRepository))
+                .param(USERNAME, username)
+                .param(PASSWORD, "MyNewP@ssw0rD")
+                .param(EMAIL, email)
+                .when()
+                .post(SIGN_IN_PATH)
+                .then()
+                .assertThat()
+                .status(HttpStatus.BAD_REQUEST);
+
+    }
+
+    @Test
+    public void shouldReturn400OnWhenEmailTaken() {
+
+        String username = "NewUser123";
+        String email = "jeff.fafa@dot.com";
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(new User()));
+        when(userRepository.findByUsername(email)).thenThrow(IncorrectResultSizeDataAccessException.class);
 
         given()
                 .standaloneSetup(new SignInController(verifier, userVerifier, saltRepository, userRepository))

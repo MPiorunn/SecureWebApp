@@ -1,5 +1,7 @@
 package com.piorun.secure.app.controller;
 
+import com.piorun.secure.app.exception.SignInException;
+import com.piorun.secure.app.exception.VerificationException;
 import com.piorun.secure.app.model.Salt;
 import com.piorun.secure.app.model.User;
 import com.piorun.secure.app.repository.SaltRepository;
@@ -13,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 
 
 @RestController
@@ -37,18 +38,29 @@ public class SignInController {
     @PostMapping(value = "/add")
     public ResponseEntity<User> registerUser(String username, String password, String email) {
         if (logger.isInfoEnabled()) {
-            logger.info("Received signIn request for username " + username + " and email : " + email);
+            logger.info("Received sign in request for username : " + username + " and email : " + email);
         }
-        verifier.verifyInputParameters(username, password, email);
-        userVerifier.verify(username);
+        verifyInputParameters(username, password, email);
         String s = PasswordUtils.generateSalt();
         Salt salt = new Salt(s);
         String hash = PasswordUtils.hashPassword(password, s);
         Salt savedSalt = saltRepository.save(salt);
         User user = new User(username, hash, email, savedSalt.getId());
         userRepository.save(user);
+
+        logger.info("Added new user " + username + " to the database");
         return new ResponseEntity<>(user, HttpStatus.OK);
 
+    }
+
+
+    private void verifyInputParameters(String username, String password, String email) {
+        try {
+            verifier.verifyInputParameters(username, password, email);
+            userVerifier.verifyIfUserExists(username, email);
+        } catch (VerificationException e) {
+            throw new SignInException(e.getMessage());
+        }
     }
 
 }

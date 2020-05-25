@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class SignInException extends IllegalArgumentException {
+public class LoginException extends IllegalArgumentException {
 
-    public SignInException(String s) {
-        super(s);
+    public LoginException() {
+        super("Wrong username or password");
     }
 }

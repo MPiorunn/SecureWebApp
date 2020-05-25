@@ -20,4 +20,10 @@ public class ParamsVerifier {
         passwordVerifier.verify(password);
         emailVerifier.verify(email);
     }
+
+    public void verifyInputParameters(String username, String password) {
+        usernameVerifier.verify(username);
+        passwordVerifier.verify(password);
+    }
+
 }

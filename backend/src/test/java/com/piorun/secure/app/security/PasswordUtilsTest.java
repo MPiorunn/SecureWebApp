@@ -19,7 +19,7 @@ public class PasswordUtilsTest {
         String salt = PasswordUtils.generateSalt();
         String password = "MyPAssw0rd!";
         String hash = PasswordUtils.hashPassword(password, salt);
-        boolean b = PasswordUtils.chechHash(hash, password, salt);
+        boolean b = PasswordUtils.checkHash(hash, password, salt);
         assertTrue(b);
     }
 

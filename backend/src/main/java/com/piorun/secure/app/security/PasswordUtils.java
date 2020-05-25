@@ -20,7 +20,7 @@ public class PasswordUtils {
         return BCrypt.hashpw(PEPPER + password, salt).substring(salt.length());
     }
 
-    public static boolean chechHash(String hash, String password, String salt) {
+    public static boolean checkHash(String hash, String password, String salt) {
         return hash.equals(hashPassword(password, salt));
     }
 }
