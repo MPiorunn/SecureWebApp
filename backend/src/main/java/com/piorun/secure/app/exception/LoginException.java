@@ -8,5 +8,7 @@ public class LoginException extends IllegalArgumentException {
 
     public LoginException() {
         super("Wrong username or password");
+
+
     }
 }
