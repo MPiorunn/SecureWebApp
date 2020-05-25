@@ -9,13 +9,13 @@ public class PasswordResetToken {
     @Id
     private String id;
     private String token;
-    private String username;
+    private String email;
     private LocalDateTime expiryDate;
 
-    public PasswordResetToken(String token, String username, LocalDateTime expiryDate) {
+    public PasswordResetToken(String token, String username) {
         this.token = token;
-        this.username = username;
-        this.expiryDate = expiryDate;
+        this.email = username;
+        this.expiryDate = LocalDateTime.now().plusDays(1);
     }
 
     public String getId() {
@@ -34,12 +34,12 @@ public class PasswordResetToken {
         this.token = token;
     }
 
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public LocalDateTime getExpiryDate() {
