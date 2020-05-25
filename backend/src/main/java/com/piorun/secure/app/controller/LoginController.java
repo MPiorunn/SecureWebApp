@@ -8,7 +8,6 @@ import com.piorun.secure.app.repository.SaltRepository;
 import com.piorun.secure.app.repository.UserRepository;
 import com.piorun.secure.app.security.PasswordUtils;
 import com.piorun.secure.app.security.verifiers.ParamsVerifier;
-import com.piorun.secure.app.security.verifiers.UserVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -24,13 +23,11 @@ public class LoginController {
     private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     private final ParamsVerifier verifier;
-    private final UserVerifier userVerifier;
     private final SaltRepository saltRepository;
     private final UserRepository userRepository;
 
-    public LoginController(ParamsVerifier verifier, UserVerifier userVerifier, SaltRepository saltRepository, UserRepository userRepository) {
+    public LoginController(ParamsVerifier verifier, SaltRepository saltRepository, UserRepository userRepository) {
         this.verifier = verifier;
-        this.userVerifier = userVerifier;
         this.saltRepository = saltRepository;
         this.userRepository = userRepository;
     }
@@ -40,29 +37,43 @@ public class LoginController {
         logger.info("Received login request with username : " + username + " and password : " + password);
 
         verifyInputParameters(username, password);
-        Optional<User> userOptional = userRepository.findByUsername(username);
-        if (userOptional.isEmpty()) {
-            throw new LoginException();
-        }
-        User user = userOptional.get();
-        logger.info("User with username + " + username + " found in db");
-        Optional<Salt> saltOptional = saltRepository.findById(user.getSaltId());
-        if (saltOptional.isEmpty()) {
-            throw new LoginException();
-        }
-        logger.info("Salt found for username " + username);
-        Salt salt = saltOptional.get();
 
-        logger.info("Hash verification for user " + username + " ...");
-        boolean checkHash = PasswordUtils.checkHash(user.getHash(), password, salt.getValue());
-        if (!checkHash) {
-            logger.info("Hash incorrect");
-            throw new LoginException();
-        }
-        logger.info("Hash correct, login successful");
+        User user = getUserFromDatabase(username);
+
+        Salt salt = getSaltFromDatabase(user.getSaltId());
+
+        verifyProvidedPassword(user.getHash(), password, salt.getValue());
+
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    private void verifyProvidedPassword(String hash, String password, String salt) {
+        logger.info("Hash verification started for hash " + hash);
+        boolean checkHash = PasswordUtils.checkHash(hash, password, salt);
+        if (!checkHash) {
+            logger.info("Hash incorrect. Aborting login attempt");
+            throw new LoginException();
+        }
+        logger.info("Hash correct, login successful");
+    }
+
+    private Salt getSaltFromDatabase(String saltId) {
+        Optional<Salt> saltOptional = saltRepository.findById(saltId);
+        if (saltOptional.isEmpty()) {
+            throw new LoginException();
+        }
+        return saltOptional.get();
+    }
+
+    private User getUserFromDatabase(String username) {
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        if (userOptional.isEmpty()) {
+            logger.info("User with username " + username + " not found in database");
+            throw new LoginException();
+        }
+        logger.info("User with username " + username + " found in database");
+        return userOptional.get();
+    }
 
     private void verifyInputParameters(String username, String password) {
         try {

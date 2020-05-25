@@ -40,7 +40,8 @@ public class SignInControllerTest {
         String uuid = UUID.randomUUID().toString();
         when(salt.getId()).thenReturn(uuid);
         when(saltRepository.save(any())).thenReturn(salt);
-        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(new User()));
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
+
     }
 
     @Test

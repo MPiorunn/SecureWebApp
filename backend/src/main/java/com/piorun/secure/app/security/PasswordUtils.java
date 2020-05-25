@@ -2,7 +2,9 @@ package com.piorun.secure.app.security;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PasswordUtils {
 
     private static String PEPPER = "someDefaultValue";
