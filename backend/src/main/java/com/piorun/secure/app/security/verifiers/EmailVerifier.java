@@ -17,7 +17,7 @@ public class EmailVerifier implements Verifier {
         try {
             InternetAddress address = new InternetAddress(email);
             address.validate();
-        } catch (AddressException e) {
+        } catch (NullPointerException | AddressException e) {
             logger.info("Wrong email format for email : " + email);
             throw new VerificationException("Wrong email format");
         }

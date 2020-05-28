@@ -1,5 +1,6 @@
 package com.piorun.secure.app.controller;
 
+import com.piorun.secure.app.mail.EmailSender;
 import com.piorun.secure.app.model.User;
 import com.piorun.secure.app.repository.PasswordResetTokenRepository;
 import com.piorun.secure.app.repository.SaltRepository;
@@ -21,13 +22,14 @@ public class PasswordResetLinkGenerationTest {
     private final UserRepository userRepository = mock(UserRepository.class);
     private final SaltRepository saltRepository = mock(SaltRepository.class);
     private final PasswordResetTokenRepository tokenRepository = mock(PasswordResetTokenRepository.class);
+    private final EmailSender emailService = mock(EmailSender.class);
 
     @Test
     public void shouldReturn200WhenInputOk() {
         String email = "jeff.fafa@dot.com";
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(new User()));
         given()
-                .standaloneSetup(new PasswordResetController(userRepository, saltRepository, tokenRepository))
+                .standaloneSetup(new PasswordLinkController(userRepository, tokenRepository, emailService))
                 .param(EMAIL, email)
                 .when()
                 .post(RESET_PATH)
@@ -43,7 +45,7 @@ public class PasswordResetLinkGenerationTest {
     public void shouldReturn200WhenWrongEmailFormat() {
         String email = "jeff.fafa";
         given()
-                .standaloneSetup(new PasswordResetController(userRepository, saltRepository, tokenRepository))
+                .standaloneSetup(new PasswordLinkController(userRepository, tokenRepository, emailService))
                 .param(EMAIL, email)
                 .when()
                 .post(RESET_PATH)
@@ -60,7 +62,7 @@ public class PasswordResetLinkGenerationTest {
         String email = "jeff.fafa@dot.com";
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
         given()
-                .standaloneSetup(new PasswordResetController(userRepository, saltRepository, tokenRepository))
+                .standaloneSetup(new PasswordLinkController(userRepository, tokenRepository, emailService))
                 .param(EMAIL, email)
                 .when()
                 .post(RESET_PATH)

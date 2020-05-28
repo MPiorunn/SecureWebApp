@@ -8,6 +8,11 @@ public class EmailVerifierTest {
     private final Verifier verifier = new EmailVerifier();
 
     @Test(expected = VerificationException.class)
+    public void failOnNull(){
+        verifier.verify(null);
+    }
+
+    @Test(expected = VerificationException.class)
     public void failOnNoAtSign(){
         verifier.verify("emailNoAt");
     }

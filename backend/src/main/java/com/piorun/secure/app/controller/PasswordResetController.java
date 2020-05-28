@@ -1,72 +1,63 @@
 package com.piorun.secure.app.controller;
 
-import com.piorun.secure.app.exception.VerificationException;
+
 import com.piorun.secure.app.model.PasswordResetToken;
-import com.piorun.secure.app.model.User;
 import com.piorun.secure.app.repository.PasswordResetTokenRepository;
 import com.piorun.secure.app.repository.SaltRepository;
 import com.piorun.secure.app.repository.UserRepository;
-import com.piorun.secure.app.security.verifiers.EmailVerifier;
 import com.piorun.secure.app.security.verifiers.PasswordVerifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
 @RestController
 public class PasswordResetController {
 
-    private final Logger logger = LoggerFactory.getLogger(PasswordResetController.class);
-
     private final UserRepository userRepository;
     private final SaltRepository saltRepository;
     private final PasswordResetTokenRepository tokenRepository;
     private final PasswordVerifier passwordVerifier;
-    private final EmailVerifier emailVerifier;
-    private final String MESSAGE = "Password reset link was sent to provided email";
+    private final String LINK_SENT_MESSAGE = "Password reset link was sent to provided email";
 
     public PasswordResetController(UserRepository userRepository, SaltRepository saltRepository, PasswordResetTokenRepository tokenRepository) {
         this.userRepository = userRepository;
         this.saltRepository = saltRepository;
         this.tokenRepository = tokenRepository;
-        this.emailVerifier = new EmailVerifier();
         this.passwordVerifier = new PasswordVerifier();
     }
 
-    @PostMapping("/reset")
-    public String generateResetLink(String email) {
-        logger.info("Received password reset link generation for email : " + email);
+    @PostMapping("/reset/{token}")
+    public ResponseEntity<String> resetPassword(String password, @PathVariable String token) {
+        verifyToken(token);
 
-        if (getUserFromDbByEmail(email).isEmpty()) {
-            logger.info("User with that email not found in database");
-            return MESSAGE;
-        }
-
-        String token = UUID.randomUUID().toString();
-        PasswordResetToken resetToken = new PasswordResetToken(token, email);
-        logger.info("Generated password reset token for email : " + email + ", that expires " + resetToken.getExpiryDate().toString());
-        tokenRepository.deleteByEmail(email);
-        tokenRepository.save(resetToken);
-        return MESSAGE;
+        passwordVerifier.verify(password);
+        userRepository.save(null);
+        saltRepository.save(null);
+        return new ResponseEntity<>(LINK_SENT_MESSAGE, HttpStatus.OK);
     }
 
-    private Optional<User> getUserFromDbByEmail(String email) {
+    private void verifyToken(String token) {
         try {
-            emailVerifier.verify(email);
-        } catch (VerificationException e) {
-            logger.info("Provided email was not in correct format");
-            return Optional.empty();
+            UUID uuid = UUID.fromString(token);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
         }
 
-        return userRepository.findByEmail(email);
-    }
+        Optional<PasswordResetToken> tokenOptional = tokenRepository.findByToken(token);
+        if (tokenOptional.isEmpty()) {
+            System.out.println("thrown new Exception");
+        }
 
-    @PostMapping
-    public ResponseEntity<String> resetPassword() {
-        return null;
+        PasswordResetToken resetToken = tokenOptional.get();
+        if (resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            System.out.println("Exception token too old");
+        }
+
     }
 }
