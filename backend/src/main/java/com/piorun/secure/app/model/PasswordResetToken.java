@@ -12,9 +12,9 @@ public class PasswordResetToken {
     private String email;
     private LocalDateTime expiryDate;
 
-    public PasswordResetToken(String token, String username) {
+    public PasswordResetToken(String token, String email) {
         this.token = token;
-        this.email = username;
+        this.email = email;
         this.expiryDate = LocalDateTime.now().plusDays(1);
     }
 
