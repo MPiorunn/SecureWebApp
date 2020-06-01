@@ -59,7 +59,7 @@ public class PasswordResetLinkGenerationTest {
 
     @Test
     public void shouldReturn200WhenUserNotFoundByEmail() {
-        String email = "jeff.fafa@dot.com";
+        String email = "jeff.fafa@gmail.com";
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
         given()
                 .standaloneSetup(new PasswordLinkController(userRepository, tokenRepository, emailService))

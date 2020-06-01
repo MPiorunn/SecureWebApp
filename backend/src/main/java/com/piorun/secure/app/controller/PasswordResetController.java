@@ -1,6 +1,7 @@
 package com.piorun.secure.app.controller;
 
 
+import com.piorun.secure.app.exception.PasswordResetException;
 import com.piorun.secure.app.exception.VerificationException;
 import com.piorun.secure.app.model.PasswordResetToken;
 import com.piorun.secure.app.model.Salt;
@@ -43,20 +44,41 @@ public class PasswordResetController {
     @PostMapping("/reset/{token}")
     public ResponseEntity<String> resetPassword(String password, @PathVariable String token) {
         logger.info("Received password reset request for token " + token);
-        passwordVerifier.verify(password);
-
-        PasswordResetToken resetToken = getTokenFromDatabase(token);
-        // TODO Add password not changed!
-
-        String email = resetToken.getEmail();
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isEmpty()) {
-            throw new VerificationException("No user has generated this reset token");
+        try {
+            passwordVerifier.verify(password);
+        } catch (VerificationException e) {
+            throw new PasswordResetException("Pick the better password!");
         }
 
-        generateNewPasswordForUser(userOptional.get(), password);
+        PasswordResetToken resetToken = getTokenFromDatabase(token);
+
+        Optional<User> userOptional = userRepository.findByEmail(resetToken.getEmail());
+
+        checkIfUserGeneratedThatToken(userOptional);
+
+        User user = userOptional.get();
+
+        verifyIfPasswordsAreDifferent(user, password);
+
+        generateNewPasswordForUser(user, password);
 
         return new ResponseEntity<>(LINK_SENT_MESSAGE, HttpStatus.OK);
+    }
+
+    private void checkIfUserGeneratedThatToken(Optional<User> userOptional) {
+        if (userOptional.isEmpty()) {
+            throw new PasswordResetException("No user has generated this reset token");
+        }
+    }
+
+    private void verifyIfPasswordsAreDifferent(User user, String password) {
+        String saltId = user.getSaltId();
+        Salt userSalt = saltRepository.findById(saltId).get();
+        boolean hashesAreEqual = PasswordUtils.checkHash(user.getHash(), password, userSalt.getValue());
+        if (hashesAreEqual) {
+            logger.info("User provided the same password as before!");
+            throw new PasswordResetException("Pick the better password!");
+        }
     }
 
     private void generateNewPasswordForUser(User user, String password) {
@@ -67,8 +89,6 @@ public class PasswordResetController {
         String newSalt = PasswordUtils.generateSalt();
         String newHash = PasswordUtils.hashPassword(password, newSalt);
         String saltId = user.getSaltId();
-
-
 
         logger.info("Removing old Salt with ID " + saltId + " for user " + username);
         Salt savedSalt = saltRepository.save(new Salt(newSalt));
@@ -92,21 +112,21 @@ public class PasswordResetController {
             UUID uuid = UUID.fromString(token);
         } catch (IllegalArgumentException e) {
             logger.info("Provided token was in incorrect for UUID format");
-            throw new VerificationException("Incorrect token format");
+            throw new PasswordResetException("Incorrect token format");
         }
         logger.info("Provided token was in correct for UUID format");
 
         Optional<PasswordResetToken> tokenOptional = tokenRepository.findByToken(token);
         if (tokenOptional.isEmpty()) {
             logger.info("Token " + token + " was not found in the database");
-            throw new VerificationException("Token not found in the database");
+            throw new PasswordResetException("Token not found in the database");
         }
         logger.info("Token " + token + " was found in the database");
 
         PasswordResetToken resetToken = tokenOptional.get();
         if (resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
             logger.info("Token " + token + " has expired on " + resetToken.getExpiryDate().toString());
-            throw new VerificationException("Token already expired");
+            throw new PasswordResetException("Token already expired");
         }
 
         return resetToken;
