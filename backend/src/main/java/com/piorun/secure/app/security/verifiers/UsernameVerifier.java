@@ -18,7 +18,6 @@ public class UsernameVerifier implements Verifier {
         }
 
         logger.info("Username " + username + " successfully verified");
-
     }
 
 }

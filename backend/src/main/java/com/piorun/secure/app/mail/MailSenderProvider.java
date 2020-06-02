@@ -5,8 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import java.util.Properties;
-
 public class MailSenderProvider {
 
     @Value("spring.mail.username")
@@ -20,13 +18,6 @@ public class MailSenderProvider {
 
     @Value("spring.mail.port")
     private int port;
-
-    @Value("spring.mail.properties.mail.smtp.auth")
-    private boolean mailSmtpAuto;
-
-    @Value("spring.mail.properties.mail.smtp.starttls.enable")
-    private boolean mailSmtpStartTlsEnable;
-
 
     @Bean
     public JavaMailSender create() {

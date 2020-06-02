@@ -7,8 +7,6 @@ import org.slf4j.LoggerFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-
 //TODO convert to static metod instead of fancy interface implementation
 public class PasswordVerifier implements Verifier {
 

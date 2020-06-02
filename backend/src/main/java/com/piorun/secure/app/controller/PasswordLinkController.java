@@ -27,7 +27,6 @@ public class PasswordLinkController {
     private final EmailVerifier emailVerifier;
     private final EmailSender emailService;
 
-
     public PasswordLinkController(UserRepository userRepository, PasswordResetTokenRepository tokenRepository, EmailSender emailService) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
@@ -67,6 +66,4 @@ public class PasswordLinkController {
 
         return userRepository.findByEmail(email);
     }
-
-
 }

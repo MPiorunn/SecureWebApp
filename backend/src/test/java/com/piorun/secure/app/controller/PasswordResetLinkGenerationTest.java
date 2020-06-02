@@ -14,7 +14,6 @@ import static io.restassured.module.webtestclient.RestAssuredWebTestClient.given
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-
 public class PasswordResetLinkGenerationTest {
 
     private final String RESET_PATH = "/reset";

@@ -16,7 +16,6 @@ public class EmailSender {
         this.emailSender = emailSender;
     }
 
-
     public void sendMail(String to, String subject, String text) {
         verifyInputParameters(to, subject, text);
         SimpleMailMessage mail = new SimpleMailMessage();

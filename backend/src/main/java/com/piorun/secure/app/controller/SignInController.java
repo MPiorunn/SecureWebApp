@@ -27,7 +27,6 @@ public class SignInController {
     private final SaltRepository saltRepository;
     private final UserRepository userRepository;
 
-
     public SignInController(ParamsVerifier verifier, UserVerifier userVerifier, SaltRepository saltRepository, UserRepository userRepository) {
         this.verifier = verifier;
         this.userVerifier = userVerifier;
@@ -53,7 +52,6 @@ public class SignInController {
 
     }
 
-
     private void verifyInputParameters(String username, String password, String email) {
         try {
             verifier.verifyInputParameters(username, password, email);
@@ -62,5 +60,4 @@ public class SignInController {
             throw new SignInException(e.getMessage());
         }
     }
-
 }

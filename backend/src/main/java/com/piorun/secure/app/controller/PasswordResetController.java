@@ -109,9 +109,9 @@ public class PasswordResetController {
 
     private PasswordResetToken getTokenFromDatabase(String token) {
         try {
-            UUID uuid = UUID.fromString(token);
+            UUID.fromString(token);
         } catch (IllegalArgumentException e) {
-            logger.info("Provided token was in incorrect for UUID format");
+            logger.info("Provided token " + token + "was in incorrect for UUID format");
             throw new PasswordResetException("Incorrect token format");
         }
         logger.info("Provided token was in correct for UUID format");

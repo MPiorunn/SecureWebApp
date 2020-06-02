@@ -119,7 +119,6 @@ public class PasswordResetTest {
         verify(userRepository, times(1)).findByEmail(email);
     }
 
-
     @Test
     public void shouldReturn400WhenPasswordIsTheSame() {
         PasswordResetToken resetToken = mock(PasswordResetToken.class);

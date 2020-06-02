@@ -20,7 +20,6 @@ public class UserVerifier implements Verifier {
         this.userRepository = userRepository;
     }
 
-
     public void verifyIfUserExists(String username, String email) {
         verifyByUsername(username);
         verifyByEmail(email);

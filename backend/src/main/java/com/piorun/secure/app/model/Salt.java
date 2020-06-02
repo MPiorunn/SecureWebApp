@@ -8,7 +8,6 @@ public class Salt {
     private String id;
     private String value;
 
-
     public Salt(String value) {
         this.value = value;
     }

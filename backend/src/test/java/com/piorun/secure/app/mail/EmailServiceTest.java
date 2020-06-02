@@ -8,10 +8,8 @@ import static org.mockito.Mockito.*;
 
 public class EmailServiceTest {
 
-
     private final JavaMailSender javaMailSender = mock(JavaMailSender.class);
     private final EmailSender emailSender = new EmailSender(javaMailSender);
-
 
     @Test
     public void shouldSendEmailWhenInputCorrect() {

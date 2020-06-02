@@ -57,7 +57,6 @@ public class LoginControllerTest {
 
     }
 
-
     @Test
     public void shouldReturn400WhenUsernameTooShort() {
         String username = "s";
@@ -118,7 +117,6 @@ public class LoginControllerTest {
     public void shouldReturn400WhenWrongPassword() {
         String username = "NewUser123";
         String password = "MyNewP@ssw0rD";
-        String hash = PasswordUtils.hashPassword(password, SALT);
         User user = new User(username, "SOME HASH", null, SALT_ID);
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
