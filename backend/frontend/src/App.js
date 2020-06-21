@@ -4,6 +4,8 @@ import {observer} from 'mobx-react'
 import UserStore from "./stores/UserStore";
 import SubmitButton from "./components/SubmitButton";
 import LoginForm from "./components/LoginForm";
+import PasswordResetForm from "./components/PasswordResetForm";
+import SignInForm from "./components/SignInForm";
 
 class App extends React.Component {
 
@@ -87,7 +89,7 @@ class App extends React.Component {
             return (
                 <div className="app">
                     <div className="container">
-                        <LoginForm/>
+                        <SignInForm/>
                     </div>
                 </div>
             );
