@@ -59,3 +59,8 @@ body, html, #root, .app, .container {
 .btn:hover {
     background-color: #61d4ff;
 }
+
+.errorMessage {
+    color: red;
+    font-size: 10px;
+}
