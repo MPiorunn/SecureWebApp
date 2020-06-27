@@ -69,6 +69,8 @@ public class LoginController {
         Optional<User> userOptional = userRepository.findByUsername(username);
         if (userOptional.isEmpty()) {
             logger.info("User with username " + username + " not found in database");
+            logger.info("Calculating some hash to prevent timing attack");
+            PasswordUtils.checkHash("#@! Response time attack PR0tection", "#@! Response time attack PR0tection", "#@! Response time attack PR0tection");
             throw new LoginException();
         }
         logger.info("User with username " + username + " found in database");
