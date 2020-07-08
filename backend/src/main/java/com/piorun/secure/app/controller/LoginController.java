@@ -70,7 +70,7 @@ public class LoginController {
         if (userOptional.isEmpty()) {
             logger.info("User with username " + username + " not found in database");
             logger.info("Calculating some hash to prevent timing attack");
-            PasswordUtils.checkHash("#@! Response time attack PR0tection", "#@! Response time attack PR0tection", "#@! Response time attack PR0tection");
+            PasswordUtils.checkHash("#@! Response time attack PR0tection", "#@! Response time attack PR0tection", PasswordUtils.generateSalt());
             throw new LoginException();
         }
         logger.info("User with username " + username + " found in database");
