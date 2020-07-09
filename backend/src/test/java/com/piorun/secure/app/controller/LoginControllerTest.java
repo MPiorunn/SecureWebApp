@@ -10,10 +10,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
 import static io.restassured.module.webtestclient.RestAssuredWebTestClient.given;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -129,6 +131,58 @@ public class LoginControllerTest {
                 .then()
                 .assertThat()
                 .status(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void timingAttackProtection() {
+        String username = "NewUser123";
+        String password = "MyNewP@ssw0rD";
+        String hash = PasswordUtils.hashPassword(password, SALT);
+        User user = new User(username, hash, null, SALT_ID);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+
+        long[] times = new long[10];
+
+        for (int i = 0; i < 10; i++) {
+            long time = given()
+                    .standaloneSetup(new LoginController(verifier, saltRepository, userRepository))
+                    .param(USERNAME, username)
+                    .param(PASSWORD, password)
+                    .when()
+                    .post(LOGIN_PATH)
+                    .getTime();
+            if (i != 0) {
+                times[i] = time;
+            }
+        }
+
+
+        long[] times2 = new long[10];
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+        for (int i = 0; i < 10; i++) {
+            long time = given()
+                    .standaloneSetup(new LoginController(verifier, saltRepository, userRepository))
+                    .param(USERNAME, username)
+                    .param(PASSWORD, password)
+                    .when()
+                    .post(LOGIN_PATH).time();
+            if (i != 0) {
+                times2[i] = time;
+            }
+        }
+
+        double averageWhenFound = Arrays.stream(times).average().getAsDouble();
+        double averageWhenNotFound = Arrays.stream(times2).average().getAsDouble();
+
+        double tenMillis = 10L;
+        assertTrue(averageWhenFound - tenMillis < averageWhenNotFound);
+        assertTrue(averageWhenFound + tenMillis > averageWhenNotFound);
+        assertTrue(averageWhenNotFound - tenMillis < averageWhenFound);
+        assertTrue(averageWhenNotFound + tenMillis > averageWhenFound);
+
+
     }
 
 }
