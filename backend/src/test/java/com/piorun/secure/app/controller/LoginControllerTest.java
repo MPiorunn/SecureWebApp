@@ -176,11 +176,13 @@ public class LoginControllerTest {
         double averageWhenFound = Arrays.stream(times).average().getAsDouble();
         double averageWhenNotFound = Arrays.stream(times2).average().getAsDouble();
 
-        double tenMillis = 10L;
-        assertTrue(averageWhenFound - tenMillis < averageWhenNotFound);
-        assertTrue(averageWhenFound + tenMillis > averageWhenNotFound);
-        assertTrue(averageWhenNotFound - tenMillis < averageWhenFound);
-        assertTrue(averageWhenNotFound + tenMillis > averageWhenFound);
+        double tenPercentRange = averageWhenFound * 0.1;
+        assertTrue(averageWhenFound - tenPercentRange < averageWhenNotFound);
+        assertTrue(averageWhenFound + tenPercentRange > averageWhenNotFound);
+
+        tenPercentRange = averageWhenNotFound * 0.1;
+        assertTrue(averageWhenNotFound - tenPercentRange < averageWhenFound);
+        assertTrue(averageWhenNotFound + tenPercentRange > averageWhenFound);
 
 
     }
