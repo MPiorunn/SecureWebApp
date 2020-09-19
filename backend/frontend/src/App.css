@@ -5,12 +5,26 @@ body, html, #root, .app, .container {
 
 .container {
     font-size: 28px;
-    color: #ffffff;
+    color: #9fa8b0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: #ffffff;
+    background: -webkit-gradient(linear, left top, right bottom, color-stop(0%, #EA5C54), color-stop(100%, #bb6dec));
+}
+
+.wrapper {
+    background: rgb(50, 54, 74);
+    padding: 15px;
+    min-width: 280px;
+    min-height: 500px;
+}
+
+.title {
+    border-top: solid 1px #9fa8b0;
+    text-align: left;
+    padding-top: 80px;
+    padding-bottom: 40px;
 }
 
 .loginForm {
@@ -20,23 +34,25 @@ body, html, #root, .app, .container {
     max-width: 400px;
     padding-left: 20px;
     padding-right: 20px;
-
 }
 
 .inputField {
-    padding-top: 16px;
+    padding-top: 2px;
+}
+
+::placeholder {
+    color: #9fa8b0;
 }
 
 .input {
     box-sizing: border-box;
     outline: none;
-    border: solid 2px #0f1011;
-    border-radius: 4px;
-    color: #292929;
+    border: solid 1px #818d98;
+    color: #ffffff;
     width: 100%;
     padding: 12px;
     font-size: 14px;
-    background: rgba(255, 255, 255, 1);
+    background: #3c3e51;
 }
 
 .submitButton {
@@ -45,29 +61,19 @@ body, html, #root, .app, .container {
 }
 
 .btn {
-    width: 100%;
+    width: 50%;
     min-width: 280px;
-    color: #565656;
-    padding: 12px;
+    min-height: 50px;
     font-size: 14px;
     font-weight: bold;
-    border: solid 2px #000000;
-    border-radius: 4px;
-    background: #fff;
+    border-radius: 20px;
+    border: solid 2px #be2f7a;
+    color: #be2f7a;
+    background: rgb(50, 54, 74);
     cursor: pointer;
 }
 
 .btn:hover {
-    background-color: #61d4ff;
-}
-
-.errorMessage {
-    color: red;
-    font-size: 10px;
-}
-
-.wrapper {
-    background-color: #5050c1;
-    padding: 15px;
-    border-radius: 10px;
+    background: #be2f7a;
+    color: rgb(50, 54, 74);
 }

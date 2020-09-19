@@ -46,6 +46,10 @@ class SignInForm extends React.Component {
     }
 
     validateEmail = email => {
+        if (email === "") {
+            return "";
+        }
+
         let valid = email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
 
         if (valid == null) {
@@ -56,6 +60,10 @@ class SignInForm extends React.Component {
     }
 
     validatePassword = password => {
+        if (password === "") {
+            return "";
+        }
+
         if (password.length < PASSWORD_LENGTH) {
             return "Password must be at least " + PASSWORD_LENGTH + " characters long";
         }
@@ -122,7 +130,7 @@ class SignInForm extends React.Component {
 
         return (
             <div className="loginForm">
-                Sign In
+                <div className="title">Create an account</div>
                 <InputField
                     type='type'
                     placeholder='Username'
@@ -130,7 +138,7 @@ class SignInForm extends React.Component {
                     onChange={(val) => this.setInputValue('username', val)}
                 />
 
-                {formErrors.username.length > 0 && (<span className={"errorMessage"}>{formErrors.username}</span>)}
+                {/*{formErrors.username.length > 0 && (<span className={"errorMessage"}>{formErrors.username}</span>)}*/}
 
                 <InputField
                     type='type'
@@ -139,7 +147,7 @@ class SignInForm extends React.Component {
                     onChange={(val) => this.setInputValue('email', val)}
                 />
 
-                {formErrors.email.length > 0 && (<span className={"errorMessage"}>{formErrors.email}</span>)}
+                {/*{formErrors.email.length > 1 && (<span className={"errorMessage"}>{formErrors.email}</span>)}*/}
 
                 <InputField
                     type='password'
@@ -148,7 +156,7 @@ class SignInForm extends React.Component {
                     onChange={(val) => this.setInputValue('password', val)}
                 />
 
-                {formErrors.password.length > 0 && (<span className={"errorMessage"}>{formErrors.password}</span>)}
+                {/*{formErrors.password.length > 0 && (<span className={"errorMessage"}>{formErrors.password}</span>)}*/}
 
 
                 <InputField
@@ -158,8 +166,8 @@ class SignInForm extends React.Component {
                     onChange={(val) => this.setInputValue('confirmPassword', val)}
                 />
 
-                {formErrors.confirmPassword.length > 0 && (
-                    <span className={"errorMessage"}>{formErrors.confirmPassword}</span>)}
+                {/*{formErrors.confirmPassword.length > 0 && (*/}
+                {/*    <span className={"errorMessage"}>{formErrors.confirmPassword}</span>)}*/}
 
                 <SubmitButton
                     text='Sign In'
