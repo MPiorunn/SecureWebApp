@@ -1,7 +1,7 @@
 import React from 'react';
 import InputField from "./InputField";
 import SubmitButton from "./SubmitButton";
-import {BrowserRouter as Router, Link} from "react-router-dom";
+import {Link} from "react-router-dom";
 
 class LoginForm extends React.Component {
 
@@ -75,30 +75,30 @@ class LoginForm extends React.Component {
 
     render() {
         return (
-                <div className="loginForm">
-                    Log in
-                    <InputField
-                        type='text'
-                        placeholder='Username'
-                        value={this.state.username ? this.state.username : ''}
-                        onChange={(val) => this.setInputValue('username', val)}
-                    />
-                    <InputField
-                        type='password'
-                        placeholder='Password'
-                        value={this.state.password ? this.state.password : ''}
-                        onChange={(val) => this.setInputValue('password', val)}
-                    />
+            <div className="loginForm">
+                Log in
+                <InputField
+                    type='text'
+                    placeholder='Username'
+                    value={this.state.username ? this.state.username : ''}
+                    onChange={(val) => this.setInputValue('username', val)}
+                />
+                <InputField
+                    type='password'
+                    placeholder='Password'
+                    value={this.state.password ? this.state.password : ''}
+                    onChange={(val) => this.setInputValue('password', val)}
+                />
 
-                    <SubmitButton
-                        text='Login'
-                        disabled={this.state.buttonDisabled}
-                        // onClick={() => this.doLogin()}
-                    />
+                <SubmitButton
+                    text='Login'
+                    disabled={this.state.buttonDisabled}
+                    // onClick={() => this.doLogin()}
+                />
 
-                    <Link to="/signIn" className="redir">Create an account.</Link>
-                    <Link to="/reset" className="redir">Forgot password?</Link>
-                </div>
+                <Link to="/signIn" className="redir">Create an account.</Link>
+                <Link to="/reset" className="redir">Forgot password?</Link>
+            </div>
 
         );
     }

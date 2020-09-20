@@ -1,5 +1,5 @@
 import React from "react";
-import {BrowserRouter as Router,Link} from "react-router-dom";
+import {Link} from "react-router-dom";
 import InputField from "./InputField";
 import SubmitButton from "./SubmitButton";
 
@@ -31,30 +31,30 @@ class PasswordResetForm extends React.Component {
 
     render() {
         return (
-                <div className="loginForm">
-                    Reset Password
-                    <InputField
-                        type='password'
-                        placeholder='Password'
-                        value={this.state.password ? this.state.password : ''}
-                        onChange={(val) => this.setInputValue('password', val)}
-                    />
+            <div className="loginForm">
+                Reset Password
+                <InputField
+                    type='password'
+                    placeholder='Password'
+                    value={this.state.password ? this.state.password : ''}
+                    onChange={(val) => this.setInputValue('password', val)}
+                />
 
-                    <InputField
-                        type='password'
-                        placeholder='Confirm Password'
-                        value={this.state.confirmPassword ? this.state.confirmPassword : ''}
-                        onChange={(val) => this.setInputValue('confirmPassword', val)}
-                    />
+                <InputField
+                    type='password'
+                    placeholder='Confirm Password'
+                    value={this.state.confirmPassword ? this.state.confirmPassword : ''}
+                    onChange={(val) => this.setInputValue('confirmPassword', val)}
+                />
 
-                    <SubmitButton
-                        text='Reset password'
-                        disabled={this.state.buttonDisabled}
-                        onClick={() => this.sendForm()}
-                    />
+                <SubmitButton
+                    text='Reset password'
+                    disabled={this.state.buttonDisabled}
+                    onClick={() => this.sendForm()}
+                />
 
-                    <Link  to="/login" className="redir">Login</Link>
-                </div>
+                <Link to="/login" className="redir">Login</Link>
+            </div>
         );
     }
 }
