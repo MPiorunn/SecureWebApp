@@ -1,6 +1,7 @@
 import React from 'react';
 import InputField from "./InputField";
 import SubmitButton from "./SubmitButton";
+import {Link} from "react-router-dom";
 
 const PASSWORD_LENGTH = 10;
 
@@ -126,7 +127,7 @@ class SignInForm extends React.Component {
     }
 
     render() {
-        const {formErrors} = this.state;
+        // const {formErrors} = this.state;
 
         return (
             <div className="loginForm">
@@ -174,6 +175,8 @@ class SignInForm extends React.Component {
                     disabled={this.state.buttonDisabled}
                     onClick={() => this.sendForm()}
                 />
+
+                <Link to="/login" className="redir">Already have an account? Login</Link>
             </div>
         );
     }
