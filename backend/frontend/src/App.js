@@ -98,8 +98,7 @@ class App extends React.Component {
                         <div className="wrapper">
                             <Switch>
                                 <Route path="/reset" component={PasswordResetForm}/>
-                                <Route component={LoginForm}/>
-                                {/*<Route path="/login" component={LoginForm}/>*/}
+                                <Route path="/login" component={LoginForm}/>
                                 <Route path="/signIn" component={SignInForm}/>
                             </Switch>
                         </div>

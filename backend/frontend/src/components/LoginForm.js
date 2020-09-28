@@ -2,6 +2,8 @@ import React from 'react';
 import InputField from "./InputField";
 import SubmitButton from "./SubmitButton";
 import {Link} from "react-router-dom";
+import axios from 'axios';
+import {stringify} from "querystring";
 
 class LoginForm extends React.Component {
 
@@ -10,7 +12,6 @@ class LoginForm extends React.Component {
         this.state = {
             username: '',
             password: '',
-            buttonDisabled: false
         }
     }
 
@@ -25,51 +26,33 @@ class LoginForm extends React.Component {
         })
     }
 
-    // async doLogin() {
-    //     if (!this.state.username) {
-    //         return
-    //     }
-    //     if (!this.state.password) {
-    //         return;
-    //     }
-    //
-    //     this.setState({
-    //         buttonDisabled: true
-    //     })
-    //
-    //
-    //     try {
-    //         let res = await fetch('/login', {
-    //             method: 'post',
-    //             headers: {
-    //                 'Accept': "application/json",
-    //                 'Content-Type': 'application/json'
-    //             },
-    //             body: Json.stringify({
-    //                 username: this.state.username,
-    //                 password: this.state.password
-    //             })
-    //         })
-    //
-    //         let result = await res.json();
-    //         if (result && result.success) {
-    //             UserStore.isLoggedIn = true;
-    //             UserStore.username = this.state.username
-    //         } else if (result && result.success === false) {
-    //             this.resetForm();
-    //             // alert(result);
-    //         }
-    //     } catch (e) {
-    //         console.log(e);
-    //         this.resetForm();
-    //     }
-    // }
+    doLogin() {
+
+        if (!this.state.username || !this.state.password) {
+            return
+        }
+
+        const user = {
+            'username': this.state.username,
+            'password': this.state.password
+        }
+
+        console.log(user)
+        axios.post(`http://localhost:8080/login`, stringify(user), {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(res => {
+            console.log(res);
+        }).catch(err => {
+            console.log(err);
+        })
+    }
 
     resetForm() {
         this.setState({
             username: '',
             password: '',
-            buttonDisabled: false
         })
     }
 
@@ -92,8 +75,7 @@ class LoginForm extends React.Component {
 
                 <SubmitButton
                     text='Login'
-                    disabled={this.state.buttonDisabled}
-                    // onClick={() => this.doLogin()}
+                    onClick={() => this.doLogin()}
                 />
 
                 <Link to="/signIn" className="redir">Create an account.</Link>

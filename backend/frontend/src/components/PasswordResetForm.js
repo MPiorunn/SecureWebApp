@@ -49,7 +49,6 @@ class PasswordResetForm extends React.Component {
 
                 <SubmitButton
                     text='Reset password'
-                    disabled={this.state.buttonDisabled}
                     onClick={() => this.sendForm()}
                 />
 

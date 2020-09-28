@@ -172,7 +172,6 @@ class SignInForm extends React.Component {
 
                 <SubmitButton
                     text='Sign In'
-                    disabled={this.state.buttonDisabled}
                     onClick={() => this.sendForm()}
                 />
 

@@ -28,18 +28,13 @@ public class LoginController {
     private final SaltRepository saltRepository;
     private final UserRepository userRepository;
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/")
-    public ResponseEntity<String> hello() {
-        return new ResponseEntity<>("Hello world", HttpStatus.OK);
-    }
-
     public LoginController(ParamsVerifier verifier, SaltRepository saltRepository, UserRepository userRepository) {
         this.verifier = verifier;
         this.saltRepository = saltRepository;
         this.userRepository = userRepository;
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/login")
     public ResponseEntity<User> login(String username, String password) {
         logger.info("Received login request with username : " + username + " and password : " + password);
