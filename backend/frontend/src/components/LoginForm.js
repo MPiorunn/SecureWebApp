@@ -12,6 +12,7 @@ class LoginForm extends React.Component {
         this.state = {
             username: '',
             password: '',
+            errorMsg: ''
         }
     }
 
@@ -22,7 +23,8 @@ class LoginForm extends React.Component {
             return;
         }
         this.setState({
-            [property]: val
+            [property]: val,
+            errorMsg: ''
         })
     }
 
@@ -37,21 +39,22 @@ class LoginForm extends React.Component {
             'password': this.state.password
         }
 
-        console.log(user)
         axios.post(`http://localhost:8080/login`, stringify(user), {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         }).then(res => {
-            console.log(res);
+            console.log(res.response.status);
         }).catch(err => {
-            console.log(err);
+            this.setState({
+                errorMsg: err.response.data.message
+            })
+            this.resetPassword();
         })
     }
 
-    resetForm() {
+    resetPassword() {
         this.setState({
-            username: '',
             password: '',
         })
     }
@@ -72,6 +75,10 @@ class LoginForm extends React.Component {
                     value={this.state.password ? this.state.password : ''}
                     onChange={(val) => this.setInputValue('password', val)}
                 />
+
+                <div className="errorMsg">
+                    {this.state.errorMsg}
+                </div>
 
                 <SubmitButton
                     text='Login'

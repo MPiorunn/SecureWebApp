@@ -84,3 +84,8 @@ body, html, #root, .app, .container {
     cursor: pointer;
     padding: 5px;
 }
+
+.errorMsg {
+    color: #d25656;
+    font-size: medium;
+}
