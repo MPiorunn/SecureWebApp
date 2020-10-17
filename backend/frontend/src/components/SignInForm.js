@@ -2,8 +2,14 @@ import React from 'react';
 import InputField from "./InputField";
 import SubmitButton from "./SubmitButton";
 import {Link} from "react-router-dom";
+import axios from 'axios';
+import {stringify} from "querystring";
 
 const PASSWORD_LENGTH = 10;
+
+const INVALID_USERNAME = 'Minimum 3 characters required'
+const INVALID_CONFIRMATION = "Passwords do not match"
+const INVALID_EMAIL = "Invalid email format"
 
 class SignInForm extends React.Component {
 
@@ -15,32 +21,80 @@ class SignInForm extends React.Component {
             password: '',
             confirmPassword: '',
             email: '',
+            backendFeedback: '',
             formErrors: {
-                username: '',
-                password: '',
-                confirmPassword: '',
-                email: ''
+                username: INVALID_USERNAME,
+                password: "Password empty",
+                confirmPassword: INVALID_CONFIRMATION,
+                email: INVALID_EMAIL
             }
         }
     }
 
 
     async sendForm() {
-        console.log('xx');
-
-
         if (this.formValid(this.state.formErrors)) {
-            console.log("is ok")
+            let data = {
+                username: this.state.username,
+                password: this.state.password,
+                email: this.state.email
+            }
+            axios.post(`http://localhost:8080/add`, stringify(data), {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }).then(res => {
+                if (res.status === 200) {
+                    let resUser = res.data.username
+                    let resEmail = res.data.email
+                    if (resUser === this.state.username && resEmail === this.state.email) {
+                        this.setState({
+                            backendFeedback: "Login successfull"
+                        })
+                    }
+                }
+            }).catch(err => {
+                this.resetForm()
+                this.setState({
+                    backendFeedback: err.response.data.message
+                })
+            })
         } else {
-            console.log("invalid")
+            this.setState({
+                backendFeedback: this.getValidationErrorMessage(this.state.formErrors)
+            })
         }
+    }
+
+    getValidationErrorMessage = formErrors => {
+        let message = ''
+        Object.values(formErrors).forEach(value => {
+            message += value
+        })
+        return message;
+    }
+
+
+    resetForm() {
+        this.setState({
+            username: '',
+            password: '',
+            confirmPassword: '',
+            email: '',
+            backendFeedback: '',
+            formErrors: {
+                username: '',
+                password: '',
+                confirmPassword: '',
+                email: ''
+            }
+        })
     }
 
     formValid = formErrors => {
         let valid = true;
 
         Object.values(formErrors).forEach(value => {
-            console.log(value)
             value.length > 0 && (valid = false)
         })
         return valid;
@@ -54,7 +108,7 @@ class SignInForm extends React.Component {
         let valid = email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
 
         if (valid == null) {
-            return "Invalid email format"
+            return INVALID_EMAIL
         }
 
         return "";
@@ -99,8 +153,8 @@ class SignInForm extends React.Component {
         switch (property) {
             case "username":
                 formErrors.username =
-                    val.length < 3 && val.length > 0
-                        ? "Minimum 3 characters required"
+                    val.length < 3
+                        ? INVALID_USERNAME
                         : "";
                 break;
             case "password":
@@ -108,8 +162,8 @@ class SignInForm extends React.Component {
                 break;
             case "confirmPassword":
                 formErrors.confirmPassword =
-                    this.state.password.length <= 0 && this.state.password !== val
-                        ? "Passwords do not match"
+                    val <= 0 || this.state.password !== val
+                        ? INVALID_CONFIRMATION
                         : "";
                 break;
             case "email":
@@ -123,7 +177,7 @@ class SignInForm extends React.Component {
         this.setState({
             [property]: val,
             formErrors: formErrors
-        }, () => console.log(this.state));
+        }, () => console.log(this.state.formErrors));
     }
 
     render() {
@@ -170,6 +224,8 @@ class SignInForm extends React.Component {
                 {/*{formErrors.confirmPassword.length > 0 && (*/}
                 {/*    <span className={"errorMessage"}>{formErrors.confirmPassword}</span>)}*/}
 
+
+                {this.state.backendFeedback}
                 <SubmitButton
                     text='Sign In'
                     onClick={() => this.sendForm()}

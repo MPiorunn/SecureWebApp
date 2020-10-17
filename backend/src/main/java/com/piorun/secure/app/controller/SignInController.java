@@ -35,6 +35,7 @@ public class SignInController {
         this.userRepository = userRepository;
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/add")
     public ResponseEntity<User> registerUser(String username, String password, String email) {
         if (logger.isInfoEnabled()) {
