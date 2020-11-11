@@ -7,17 +7,21 @@ import org.slf4j.LoggerFactory;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
-public class EmailVerifier implements Verifier {
+public class EmailFormatVerifier implements Verifier {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(EmailVerifier.class);
+    private static final Logger logger = LoggerFactory.getLogger(EmailFormatVerifier.class);
 
     @Override
     public void verify(String email) throws VerificationException {
+        if (email == null) {
+            logger.info("Email is null");
+            throw new VerificationException("Wrong email format");
+        }
         try {
             InternetAddress address = new InternetAddress(email);
             address.validate();
-        } catch (NullPointerException | AddressException e) {
+        } catch (AddressException e) {
             logger.info("Wrong email format for email : " + email);
             throw new VerificationException("Wrong email format");
         }

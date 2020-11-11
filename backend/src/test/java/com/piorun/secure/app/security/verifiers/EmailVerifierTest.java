@@ -5,7 +5,7 @@ import org.junit.Test;
 
 public class EmailVerifierTest {
 
-    private final Verifier verifier = new EmailVerifier();
+    private final Verifier verifier = new EmailFormatVerifier();
 
     @Test(expected = VerificationException.class)
     public void failOnNull(){

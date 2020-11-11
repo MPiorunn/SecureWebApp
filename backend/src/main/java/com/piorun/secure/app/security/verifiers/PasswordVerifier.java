@@ -7,11 +7,12 @@ import org.slf4j.LoggerFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//TODO convert to static metod instead of fancy interface implementation
 public class PasswordVerifier implements Verifier {
 
     public static final int MIN_LENGTH = 10;
     private static final Logger logger = LoggerFactory.getLogger(PasswordVerifier.class);
+    private static final Pattern SPECIAL_CHAR = Pattern.compile("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
+    private static final Pattern DIGIT = Pattern.compile("[0-9]");
 
     @Override
     public void verify(String password) throws VerificationException {
@@ -22,25 +23,6 @@ public class PasswordVerifier implements Verifier {
         checkIfContainsSpecialCharacter(password);
 
         logger.info("Password " + password + " successfully verified");
-    }
-
-    private static void checkIfContainsSpecialCharacter(String password) throws VerificationException {
-        Pattern digit = Pattern.compile("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
-        Matcher hasDigit = digit.matcher(password);
-        if (!hasDigit.find()) {
-            logger.info("Password " + password + " must contain at least one special character");
-            throw new VerificationException("Password must contain at least one special character");
-        }
-    }
-
-    private static void checkIfContainsDigit(String password) throws VerificationException {
-        Pattern digit = Pattern.compile("[0-9]");
-        Matcher hasDigit = digit.matcher(password);
-        if (!hasDigit.find()) {
-            logger.info("Password " + password + " must contain at least one digit");
-            throw new VerificationException("Password must contain at least one digit");
-        }
-
     }
 
     private static void checkLength(String password) throws VerificationException {
@@ -61,4 +43,19 @@ public class PasswordVerifier implements Verifier {
         }
     }
 
+    private static void checkIfContainsDigit(String password) throws VerificationException {
+        Matcher hasDigit = DIGIT.matcher(password);
+        if (!hasDigit.find()) {
+            logger.info("Password " + password + " must contain at least one digit");
+            throw new VerificationException("Password must contain at least one digit");
+        }
+    }
+
+    private static void checkIfContainsSpecialCharacter(String password) throws VerificationException {
+        Matcher hasDigit = SPECIAL_CHAR.matcher(password);
+        if (!hasDigit.find()) {
+            logger.info("Password " + password + " must contain at least one special character");
+            throw new VerificationException("Password must contain at least one special character");
+        }
+    }
 }

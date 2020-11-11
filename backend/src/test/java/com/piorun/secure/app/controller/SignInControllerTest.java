@@ -6,8 +6,11 @@ import com.piorun.secure.app.repository.SaltRepository;
 import com.piorun.secure.app.repository.UserRepository;
 import com.piorun.secure.app.security.verifiers.ParamsVerifier;
 import com.piorun.secure.app.security.verifiers.UserVerifier;
+import io.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpStatus;
 
@@ -21,6 +24,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient(timeout = "36000")
 public class SignInControllerTest {
 
     private final String SIGN_IN_PATH = "/add";

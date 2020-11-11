@@ -14,10 +14,12 @@ import java.util.Optional;
 public class UserVerifier implements Verifier {
 
     private final UserRepository userRepository;
+    private final EmailVerifier emailVerifier;
     private static final Logger logger = LoggerFactory.getLogger(UserVerifier.class);
 
     public UserVerifier(UserRepository userRepository) {
         this.userRepository = userRepository;
+        this.emailVerifier = new EmailVerifier(userRepository);
     }
 
     public void verifyIfUserExists(String username, String email) {
@@ -26,7 +28,7 @@ public class UserVerifier implements Verifier {
         logger.info("User with " + username + " or " + email + " not found in the database. Verification successful");
     }
 
-    public void verifyByUsername(String username) {
+    private void verifyByUsername(String username) {
         try {
             verify(username);
         } catch (VerificationException e) {
@@ -36,7 +38,7 @@ public class UserVerifier implements Verifier {
 
     private void verifyByEmail(String email) throws VerificationException {
         try {
-            verify(email);
+            emailVerifier.verify(email);
         } catch (VerificationException e) {
             throw new VerificationException("Email already taken");
         }
@@ -57,4 +59,26 @@ public class UserVerifier implements Verifier {
         }
     }
 
+    private static class EmailVerifier implements Verifier {
+
+        private final UserRepository userRepository;
+
+        private EmailVerifier(UserRepository userRepository) {
+            this.userRepository = userRepository;
+        }
+
+        @Override
+        public void verify(String input) throws VerificationException {
+            try {
+                Optional<User> user = userRepository.findByEmail(input);
+                if (user.isPresent()) {
+                    logger.info("User with email" + input + " already exists in database");
+                    throw new VerificationException("");
+                }
+            } catch (IncorrectResultSizeDataAccessException e) {
+                logger.info("User with email " + input + " already exists in database");
+                throw new VerificationException("");
+            }
+        }
+    }
 }

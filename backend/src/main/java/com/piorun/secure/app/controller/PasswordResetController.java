@@ -32,7 +32,6 @@ public class PasswordResetController {
     private final SaltRepository saltRepository;
     private final PasswordResetTokenRepository tokenRepository;
     private final PasswordVerifier passwordVerifier;
-    private final String LINK_SENT_MESSAGE = "Password reset successful";
 
     public PasswordResetController(UserRepository userRepository, SaltRepository saltRepository, PasswordResetTokenRepository tokenRepository) {
         this.userRepository = userRepository;
@@ -62,7 +61,7 @@ public class PasswordResetController {
 
         generateNewPasswordForUser(user, password);
 
-        return new ResponseEntity<>(LINK_SENT_MESSAGE, HttpStatus.OK);
+        return new ResponseEntity<>("Password reset successful", HttpStatus.OK);
     }
 
     private void checkIfUserGeneratedThatToken(Optional<User> userOptional) {

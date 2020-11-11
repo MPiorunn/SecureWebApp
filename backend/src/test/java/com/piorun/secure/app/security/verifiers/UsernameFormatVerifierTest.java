@@ -3,9 +3,9 @@ package com.piorun.secure.app.security.verifiers;
 import com.piorun.secure.app.exception.VerificationException;
 import org.junit.Test;
 
-public class UsernameVerifierTest {
+public class UsernameFormatVerifierTest {
 
-    private final Verifier usernameVerifier = new UsernameVerifier();
+    private final Verifier usernameVerifier = new UsernameFormatVerifier();
 
     @Test(expected = VerificationException.class)
     public void failOnTooShortUsername(){

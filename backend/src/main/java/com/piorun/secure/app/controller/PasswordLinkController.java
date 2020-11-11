@@ -6,11 +6,12 @@ import com.piorun.secure.app.model.PasswordResetToken;
 import com.piorun.secure.app.model.User;
 import com.piorun.secure.app.repository.PasswordResetTokenRepository;
 import com.piorun.secure.app.repository.UserRepository;
-import com.piorun.secure.app.security.verifiers.EmailVerifier;
+import com.piorun.secure.app.security.verifiers.EmailFormatVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,17 +25,18 @@ public class PasswordLinkController {
 
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository tokenRepository;
-    private final EmailVerifier emailVerifier;
+    private final EmailFormatVerifier emailFormatVerifier;
     private final EmailSender emailService;
 
     public PasswordLinkController(UserRepository userRepository, PasswordResetTokenRepository tokenRepository, EmailSender emailService) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.emailService = emailService;
-        this.emailVerifier = new EmailVerifier();
+        this.emailFormatVerifier = new EmailFormatVerifier();
     }
 
     @PostMapping("/reset")
+    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<String> generateResetLink(String email) {
         logger.info("Received password reset link generation for email : " + email);
 
@@ -58,7 +60,7 @@ public class PasswordLinkController {
 
     private Optional<User> getUserFromDbByEmail(String email) {
         try {
-            emailVerifier.verify(email);
+            emailFormatVerifier.verify(email);
         } catch (VerificationException e) {
             logger.info("Provided email was not in correct format");
             return Optional.empty();

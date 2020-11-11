@@ -1,7 +1,7 @@
 package com.piorun.secure.app.mail;
 
 import com.piorun.secure.app.exception.VerificationException;
-import com.piorun.secure.app.security.verifiers.EmailVerifier;
+import com.piorun.secure.app.security.verifiers.EmailFormatVerifier;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class EmailSender {
 
     private final JavaMailSender emailSender;
-    private final EmailVerifier emailVerifier = new EmailVerifier();
+    private final EmailFormatVerifier emailFormatVerifier = new EmailFormatVerifier();
 
     public EmailSender(JavaMailSender emailSender) {
         this.emailSender = emailSender;
@@ -27,7 +27,7 @@ public class EmailSender {
 
     private void verifyInputParameters(String to, String subject, String text) {
         try {
-            emailVerifier.verify(to);
+            emailFormatVerifier.verify(to);
         } catch (VerificationException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
