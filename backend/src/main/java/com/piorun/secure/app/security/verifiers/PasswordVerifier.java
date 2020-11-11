@@ -22,23 +22,23 @@ public class PasswordVerifier implements Verifier {
         checkIfContainsDigit(password);
         checkIfContainsSpecialCharacter(password);
 
-        logger.info("Password " + password + " successfully verified");
+        logger.info("Password successfully verified");
     }
 
     private static void checkLength(String password) throws VerificationException {
         if (password.length() < MIN_LENGTH) {
-            logger.info("Password " + password + " must be at least " + MIN_LENGTH + " characters long");
+            logger.info("Password must be at least " + MIN_LENGTH + " characters long");
             throw new VerificationException("Password length must be at least " + MIN_LENGTH + " characters");
         }
     }
 
     private static void checkIfContainsUpperOrLowercase(String password) throws VerificationException {
         if (password.toLowerCase().equals(password)) {
-            logger.info("Password " + password + " must contain at least one uppercase character");
+            logger.info("Password must contain at least one uppercase character");
             throw new VerificationException("Password must contain at least one uppercase character");
         }
         if (password.toUpperCase().equals(password)) {
-            logger.info("Password " + password + " must contain at least one lowercase character");
+            logger.info("Password  must contain at least one lowercase character");
             throw new VerificationException("Password must contain at least one lowercase character");
         }
     }
@@ -46,7 +46,7 @@ public class PasswordVerifier implements Verifier {
     private static void checkIfContainsDigit(String password) throws VerificationException {
         Matcher hasDigit = DIGIT.matcher(password);
         if (!hasDigit.find()) {
-            logger.info("Password " + password + " must contain at least one digit");
+            logger.info("Password must contain at least one digit");
             throw new VerificationException("Password must contain at least one digit");
         }
     }
@@ -54,7 +54,7 @@ public class PasswordVerifier implements Verifier {
     private static void checkIfContainsSpecialCharacter(String password) throws VerificationException {
         Matcher hasDigit = SPECIAL_CHAR.matcher(password);
         if (!hasDigit.find()) {
-            logger.info("Password " + password + " must contain at least one special character");
+            logger.info("Password  must contain at least one special character");
             throw new VerificationException("Password must contain at least one special character");
         }
     }
