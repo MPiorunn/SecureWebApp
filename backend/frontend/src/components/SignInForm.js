@@ -4,15 +4,10 @@ import SubmitButton from "./SubmitButton";
 import {Link} from "react-router-dom";
 import axios from 'axios';
 import {stringify} from "querystring";
+import Validator from "../helpers/Validator";
 
-const PASSWORD_LENGTH = 10;
-
-const INVALID_USERNAME = 'Minimum 3 characters required'
-const INVALID_CONFIRMATION = "Passwords do not match"
-const INVALID_EMAIL = "Invalid email format"
 
 class SignInForm extends React.Component {
-
 
     constructor(props) {
         super(props);
@@ -23,17 +18,16 @@ class SignInForm extends React.Component {
             email: '',
             backendFeedback: '',
             formErrors: {
-                username: INVALID_USERNAME,
-                password: "Password empty",
-                confirmPassword: INVALID_CONFIRMATION,
-                email: INVALID_EMAIL
+                username: Validator.INVALID_USERNAME,
+                password: Validator.INVALID_PASSWORD,
+                confirmPassword: Validator.INVALID_CONFIRMATION,
+                email: Validator.INVALID_EMAIL
             }
         }
     }
 
-
     async sendForm() {
-        if (this.formValid(this.state.formErrors)) {
+        if (Validator.validateForm(this.state.formErrors)) {
             let data = {
                 username: this.state.username,
                 password: this.state.password,
@@ -49,7 +43,7 @@ class SignInForm extends React.Component {
                     let resEmail = res.data.email
                     if (resUser === this.state.username && resEmail === this.state.email) {
                         this.setState({
-                            backendFeedback: "Login successfull"
+                            backendFeedback: "Login successful"
                         })
                     }
                 }
@@ -91,58 +85,6 @@ class SignInForm extends React.Component {
         })
     }
 
-    formValid = formErrors => {
-        let valid = true;
-
-        Object.values(formErrors).forEach(value => {
-            value.length > 0 && (valid = false)
-        })
-        return valid;
-    }
-
-    validateEmail = email => {
-        if (email === "") {
-            return "";
-        }
-
-        let valid = email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
-
-        if (valid == null) {
-            return INVALID_EMAIL
-        }
-
-        return "";
-    }
-
-    validatePassword = password => {
-        if (password === "") {
-            return "";
-        }
-
-        if (password.length < PASSWORD_LENGTH) {
-            return "Password must be at least " + PASSWORD_LENGTH + " characters long";
-        }
-
-        if (password.toLowerCase() === password || password.toUpperCase() === password) {
-            return "Password must contain at least one capital and lower character";
-        }
-
-        let hasNumber = password.match(/\d+/g)
-
-        if (hasNumber === null) {
-            return "Password must contain at least one number";
-        }
-
-        let hasSpecialChar = password.match("(?=.*[!@#$%^&*])")
-
-        if (hasSpecialChar === null) {
-            return "Password must contain at least special character";
-        }
-
-        return "";
-
-    }
-
     setInputValue(property, val) {
         val = val.trim();
 
@@ -152,24 +94,17 @@ class SignInForm extends React.Component {
         console.log("Value : " + val)
         switch (property) {
             case "username":
-                formErrors.username =
-                    val.length < 3
-                        ? INVALID_USERNAME
-                        : "";
+                formErrors.username = Validator.validateUsername(val)
                 break;
             case "password":
-                formErrors.password = this.validatePassword(val);
+                formErrors.password = Validator.validatePassword(val);
                 break;
             case "confirmPassword":
-                formErrors.confirmPassword =
-                    val <= 0 || this.state.password !== val
-                        ? INVALID_CONFIRMATION
-                        : "";
+                formErrors.confirmPassword = Validator.validateConfirmedPassword(this.state.password, val)
                 break;
             case "email":
-                formErrors.email = this.validateEmail(val);
+                formErrors.email = Validator.validateEmail(val);
                 break;
-
             default:
                 break;
         }
@@ -181,8 +116,6 @@ class SignInForm extends React.Component {
     }
 
     render() {
-        // const {formErrors} = this.state;
-
         return (
             <div className="loginForm">
                 <div className="title">Create an account</div>

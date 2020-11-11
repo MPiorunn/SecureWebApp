@@ -18,10 +18,6 @@ class LoginForm extends React.Component {
 
     setInputValue(property, val) {
         val = val.trim();
-        //remove it
-        if (val.length > 12) {
-            return;
-        }
         this.setState({
             [property]: val,
             errorMsg: ''
