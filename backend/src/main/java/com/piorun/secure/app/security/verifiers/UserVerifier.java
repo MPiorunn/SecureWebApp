@@ -3,6 +3,7 @@ package com.piorun.secure.app.security.verifiers;
 import com.piorun.secure.app.exception.VerificationException;
 import com.piorun.secure.app.model.User;
 import com.piorun.secure.app.repository.UserRepository;
+import com.piorun.secure.app.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -13,13 +14,13 @@ import java.util.Optional;
 @Component
 public class UserVerifier implements Verifier {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final EmailVerifier emailVerifier;
     private static final Logger logger = LoggerFactory.getLogger(UserVerifier.class);
 
-    public UserVerifier(UserRepository userRepository) {
-        this.userRepository = userRepository;
-        this.emailVerifier = new EmailVerifier(userRepository);
+    public UserVerifier(UserService userService) {
+        this.userService = userService;
+        this.emailVerifier = new EmailVerifier(userService);
     }
 
     public void verifyIfUserExists(String username, String email) {
@@ -48,7 +49,7 @@ public class UserVerifier implements Verifier {
     public void verify(String input) throws VerificationException {
 
         try {
-            Optional<User> user = userRepository.findByUsername(input);
+            Optional<User> user = userService.findByUsername(input);
             if (user.isPresent()) {
                 logger.info("User with " + input + " already exists in database");
                 throw new VerificationException("");
@@ -61,16 +62,16 @@ public class UserVerifier implements Verifier {
 
     private static class EmailVerifier implements Verifier {
 
-        private final UserRepository userRepository;
+        private final UserService userService;
 
-        private EmailVerifier(UserRepository userRepository) {
-            this.userRepository = userRepository;
+        private EmailVerifier(UserService userService) {
+            this.userService = userService;
         }
 
         @Override
         public void verify(String input) throws VerificationException {
             try {
-                Optional<User> user = userRepository.findByEmail(input);
+                Optional<User> user = userService.findByEmail(input);
                 if (user.isPresent()) {
                     logger.info("User with email" + input + " already exists in database");
                     throw new VerificationException("");

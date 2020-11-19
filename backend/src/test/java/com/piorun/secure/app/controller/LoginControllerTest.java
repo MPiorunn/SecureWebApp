@@ -2,10 +2,10 @@ package com.piorun.secure.app.controller;
 
 import com.piorun.secure.app.model.Salt;
 import com.piorun.secure.app.model.User;
-import com.piorun.secure.app.repository.SaltRepository;
-import com.piorun.secure.app.repository.UserRepository;
 import com.piorun.secure.app.security.PasswordUtils;
 import com.piorun.secure.app.security.verifiers.ParamsVerifier;
+import com.piorun.secure.app.service.SaltService;
+import com.piorun.secure.app.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -26,8 +26,8 @@ public class LoginControllerTest {
     private final String PASSWORD = "password";
     private final String SALT = PasswordUtils.generateSalt();
     private final String SALT_ID = UUID.randomUUID().toString();
-    private final UserRepository userRepository = mock(UserRepository.class);
-    private final SaltRepository saltRepository = mock(SaltRepository.class);
+    private final UserService userService = mock(UserService.class);
+    private final SaltService saltService = mock(SaltService.class);
     private final ParamsVerifier verifier = new ParamsVerifier();
     private final Salt salt = mock(Salt.class);
 
@@ -35,7 +35,7 @@ public class LoginControllerTest {
     @Before
     public void setup() {
         when(salt.getValue()).thenReturn(SALT);
-        when(saltRepository.findById(SALT_ID)).thenReturn(Optional.of(salt));
+        when(saltService.findById(SALT_ID)).thenReturn(Optional.of(salt));
     }
 
     @Test
@@ -45,10 +45,10 @@ public class LoginControllerTest {
         String hash = PasswordUtils.hashPassword(password, SALT);
         User user = new User(username, hash, null, SALT_ID);
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userService.findByUsername(username)).thenReturn(Optional.of(user));
 
         given()
-                .standaloneSetup(new LoginController(verifier, saltRepository, userRepository))
+                .standaloneSetup(new LoginController(verifier, saltService, userService))
                 .param(USERNAME, username)
                 .param(PASSWORD, password)
                 .when()
@@ -66,9 +66,9 @@ public class LoginControllerTest {
         String hash = PasswordUtils.hashPassword(password, SALT);
         User user = new User(username, hash, null, SALT_ID);
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userService.findByUsername(username)).thenReturn(Optional.of(user));
         given()
-                .standaloneSetup(new LoginController(verifier, saltRepository, userRepository))
+                .standaloneSetup(new LoginController(verifier, saltService, userService))
                 .param(USERNAME, username)
                 .param(PASSWORD, password)
                 .when()
@@ -84,9 +84,9 @@ public class LoginControllerTest {
         String username = "NewUser123";
         String password = "MyNewP@ssw0rD";
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+        when(userService.findByUsername(username)).thenReturn(Optional.empty());
         given()
-                .standaloneSetup(new LoginController(verifier, saltRepository, userRepository))
+                .standaloneSetup(new LoginController(verifier, saltService, userService))
                 .param(USERNAME, username)
                 .param(PASSWORD, password)
                 .when()
@@ -102,9 +102,9 @@ public class LoginControllerTest {
         String username = "NewUser123";
         String password = "dsa";
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+        when(userService.findByUsername(username)).thenReturn(Optional.empty());
         given()
-                .standaloneSetup(new LoginController(verifier, saltRepository, userRepository))
+                .standaloneSetup(new LoginController(verifier, saltService, userService))
                 .param(USERNAME, username)
                 .param(PASSWORD, password)
                 .when()
@@ -121,9 +121,9 @@ public class LoginControllerTest {
         String password = "MyNewP@ssw0rD";
         User user = new User(username, "SOME HASH", null, SALT_ID);
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userService.findByUsername(username)).thenReturn(Optional.of(user));
         given()
-                .standaloneSetup(new LoginController(verifier, saltRepository, userRepository))
+                .standaloneSetup(new LoginController(verifier, saltService, userService))
                 .param(USERNAME, username)
                 .param(PASSWORD, password)
                 .when()
@@ -140,13 +140,13 @@ public class LoginControllerTest {
         String hash = PasswordUtils.hashPassword(password, SALT);
         User user = new User(username, hash, null, SALT_ID);
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userService.findByUsername(username)).thenReturn(Optional.of(user));
 
         long[] times = new long[10];
 
         for (int i = 0; i < 10; i++) {
             long time = given()
-                    .standaloneSetup(new LoginController(verifier, saltRepository, userRepository))
+                    .standaloneSetup(new LoginController(verifier, saltService, userService))
                     .param(USERNAME, username)
                     .param(PASSWORD, password)
                     .when()
@@ -160,10 +160,10 @@ public class LoginControllerTest {
 
         long[] times2 = new long[10];
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+        when(userService.findByUsername(username)).thenReturn(Optional.empty());
         for (int i = 0; i < 10; i++) {
             long time = given()
-                    .standaloneSetup(new LoginController(verifier, saltRepository, userRepository))
+                    .standaloneSetup(new LoginController(verifier, saltService, userService))
                     .param(USERNAME, username)
                     .param(PASSWORD, password)
                     .when()
@@ -183,8 +183,6 @@ public class LoginControllerTest {
         tenPercentRange = averageWhenNotFound * 0.1;
         assertTrue(averageWhenNotFound - tenPercentRange < averageWhenFound);
         assertTrue(averageWhenNotFound + tenPercentRange > averageWhenFound);
-
-
     }
 
 }

@@ -1,8 +1,10 @@
 package com.piorun.secure.app.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 
+@Data
 public class User {
 
     @Id
@@ -18,6 +20,7 @@ public class User {
 
     @JsonIgnore
     private String saltId;
+
 
 
     public User() {
@@ -69,4 +72,5 @@ public class User {
     public void setSaltId(String saltId) {
         this.saltId = saltId;
     }
+
 }

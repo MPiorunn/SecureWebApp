@@ -2,11 +2,10 @@ package com.piorun.secure.app.controller;
 
 import com.piorun.secure.app.model.Salt;
 import com.piorun.secure.app.model.User;
-import com.piorun.secure.app.repository.SaltRepository;
-import com.piorun.secure.app.repository.UserRepository;
 import com.piorun.secure.app.security.verifiers.ParamsVerifier;
 import com.piorun.secure.app.security.verifiers.UserVerifier;
-import io.restassured.RestAssured;
+import com.piorun.secure.app.service.SaltService;
+import com.piorun.secure.app.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -33,25 +32,25 @@ public class SignInControllerTest {
     private final String PASSWORD = "password";
     private final String EMAIL = "email";
 
-    private final UserRepository userRepository = mock(UserRepository.class);
-    private final SaltRepository saltRepository = mock(SaltRepository.class);
+    private final UserService userService = mock(UserService.class);
+    private final SaltService saltService = mock(SaltService.class);
     private final ParamsVerifier verifier = new ParamsVerifier();
-    private final UserVerifier userVerifier = new UserVerifier(userRepository);
+    private final UserVerifier userVerifier = new UserVerifier(userService);
     private final Salt salt = mock(Salt.class);
 
     @Before
     public void setup() {
         String uuid = UUID.randomUUID().toString();
         when(salt.getId()).thenReturn(uuid);
-        when(saltRepository.save(any())).thenReturn(salt);
-        when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
+        when(saltService.save(any())).thenReturn(salt);
+        when(userService.findByUsername(anyString())).thenReturn(Optional.empty());
     }
 
     @Test
     public void shouldReturn200OnCorrectParams() {
 
         given()
-                .standaloneSetup(new SignInController(verifier, userVerifier, saltRepository, userRepository))
+                .standaloneSetup(new SignInController(verifier, userVerifier, saltService, userService))
                 .param(USERNAME, "NewUser123")
                 .param(PASSWORD, "MyNewP@ssw0rD")
                 .param(EMAIL, "jeff.fafa@dot.com")
@@ -67,7 +66,7 @@ public class SignInControllerTest {
     public void shouldReturn400OnWrongUsername() {
 
         given()
-                .standaloneSetup(new SignInController(verifier, userVerifier, saltRepository, userRepository))
+                .standaloneSetup(new SignInController(verifier, userVerifier, saltService, userService))
                 .param(USERNAME, "short")
                 .param(PASSWORD, "MyNewP@ssw0rD")
                 .param(EMAIL, "jeff.fafa@dot.com")
@@ -84,7 +83,7 @@ public class SignInControllerTest {
     public void shouldReturn400OnWrongPassword() {
 
         given()
-                .standaloneSetup(new SignInController(verifier, userVerifier, saltRepository, userRepository))
+                .standaloneSetup(new SignInController(verifier, userVerifier, saltService, userService))
                 .param(USERNAME, "NewUser123")
                 .param(PASSWORD, "wrong")
                 .param(EMAIL, "jeff.fafa@dot.com")
@@ -100,7 +99,7 @@ public class SignInControllerTest {
     public void shouldReturn400OnWrongEmail() {
 
         given()
-                .standaloneSetup(new SignInController(verifier, userVerifier, saltRepository, userRepository))
+                .standaloneSetup(new SignInController(verifier, userVerifier, saltService, userService))
                 .param(USERNAME, "NewUser123")
                 .param(PASSWORD, "MyNewP@ssw0rD")
                 .param(EMAIL, "incorrecto")
@@ -117,11 +116,11 @@ public class SignInControllerTest {
 
         String username = "NewUser123";
         String email = "jeff.fafa@dot.com";
-        when(userRepository.findByUsername(username)).thenThrow(IncorrectResultSizeDataAccessException.class);
-        when(userRepository.findByUsername(email)).thenReturn(Optional.of(new User()));
+        when(userService.findByUsername(username)).thenThrow(IncorrectResultSizeDataAccessException.class);
+        when(userService.findByUsername(email)).thenReturn(Optional.of(new User()));
 
         given()
-                .standaloneSetup(new SignInController(verifier, userVerifier, saltRepository, userRepository))
+                .standaloneSetup(new SignInController(verifier, userVerifier, saltService, userService))
                 .param(USERNAME, username)
                 .param(PASSWORD, "MyNewP@ssw0rD")
                 .param(EMAIL, email)
@@ -138,11 +137,11 @@ public class SignInControllerTest {
 
         String username = "NewUser123";
         String email = "jeff.fafa@dot.com";
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(new User()));
-        when(userRepository.findByUsername(email)).thenThrow(IncorrectResultSizeDataAccessException.class);
+        when(userService.findByUsername(username)).thenReturn(Optional.of(new User()));
+        when(userService.findByUsername(email)).thenThrow(IncorrectResultSizeDataAccessException.class);
 
         given()
-                .standaloneSetup(new SignInController(verifier, userVerifier, saltRepository, userRepository))
+                .standaloneSetup(new SignInController(verifier, userVerifier, saltService, userService))
                 .param(USERNAME, "NewUser123")
                 .param(PASSWORD, "MyNewP@ssw0rD")
                 .param(EMAIL, "jeff.fafa@dot.com")

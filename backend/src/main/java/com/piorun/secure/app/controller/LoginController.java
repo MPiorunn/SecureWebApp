@@ -8,6 +8,10 @@ import com.piorun.secure.app.repository.SaltRepository;
 import com.piorun.secure.app.repository.UserRepository;
 import com.piorun.secure.app.security.PasswordUtils;
 import com.piorun.secure.app.security.verifiers.ParamsVerifier;
+import com.piorun.secure.app.service.SaltService;
+import com.piorun.secure.app.service.UserService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,24 +23,18 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
 @RestController
+@RequiredArgsConstructor
+@Slf4j
 public class LoginController {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
-
     private final ParamsVerifier verifier;
-    private final SaltRepository saltRepository;
-    private final UserRepository userRepository;
-
-    public LoginController(ParamsVerifier verifier, SaltRepository saltRepository, UserRepository userRepository) {
-        this.verifier = verifier;
-        this.saltRepository = saltRepository;
-        this.userRepository = userRepository;
-    }
+    private final SaltService saltService;
+    private final UserService userService;
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/login")
     public ResponseEntity<User> login(String username, String password) {
-        logger.info("Received login request with username : " + username + " and password : " + password);
+        log.info("Received login request with username : " + username + " and password : " + password);
 
         verifyInputParameters(username, password);
 
@@ -50,17 +48,17 @@ public class LoginController {
     }
 
     private void verifyProvidedPassword(String hash, String password, String salt) {
-        logger.info("Hash verification started for hash " + hash);
+        log.info("Hash verification started for hash " + hash);
         boolean checkHash = PasswordUtils.checkHash(hash, password, salt);
         if (!checkHash) {
-            logger.info("Hash incorrect. Aborting login attempt");
+            log.info("Hash incorrect. Aborting login attempt");
             throw new LoginException();
         }
-        logger.info("Hash correct, login successful");
+        log.info("Hash correct, login successful");
     }
 
     private Salt getSaltFromDatabase(String saltId) {
-        Optional<Salt> saltOptional = saltRepository.findById(saltId);
+        Optional<Salt> saltOptional = saltService.findById(saltId);
         if (saltOptional.isEmpty()) {
             throw new LoginException();
         }
@@ -68,14 +66,14 @@ public class LoginController {
     }
 
     private User getUserFromDatabase(String username) {
-        Optional<User> userOptional = userRepository.findByUsername(username);
+        Optional<User> userOptional = userService.findByUsername(username);
         if (userOptional.isEmpty()) {
-            logger.info("User with username " + username + " not found in database");
-            logger.info("Calculating some hash to prevent timing attack");
+            log.info("User with username " + username + " not found in database");
+            log.info("Calculating some hash to prevent timing attack");
             PasswordUtils.checkHash("#@! Response time attack PR0tection", "#@! Response time attack PR0tection", PasswordUtils.generateSalt());
             throw new LoginException();
         }
-        logger.info("User with username " + username + " found in database");
+        log.info("User with username " + username + " found in database");
         return userOptional.get();
     }
 
